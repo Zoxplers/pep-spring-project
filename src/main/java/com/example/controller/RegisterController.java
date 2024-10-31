@@ -13,7 +13,7 @@ public class RegisterController
 {
     private final AccountRepository accountRepository;
 
-    RegisterController(AccountRepository accountRepository)
+   public RegisterController(AccountRepository accountRepository)
     {
         this.accountRepository = accountRepository;
     }
@@ -31,8 +31,8 @@ public class RegisterController
         }
         catch(Exception e)
         {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.badRequest().body(null);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(account);
+        return ResponseEntity.ok(account);
     }
 }

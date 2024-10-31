@@ -2,9 +2,6 @@ package com.example.controller;
 
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller using Spring. The endpoints you will need can be
