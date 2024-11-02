@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller using Spring. The endpoints you will need can be
  * found in readme.md as well as the test cases. You be required to use the @GET/POST/PUT/DELETE/etc Mapping annotations
@@ -38,7 +40,7 @@ public class SocialMediaController
         }
         try
         {
-            accountRepository.save(account);
+            account = accountRepository.save(account);
         }
         catch(Exception e)
         {
@@ -53,7 +55,7 @@ public class SocialMediaController
         account = accountRepository.findAccountByUsernameAndPassword(account.getUsername(), account.getPassword());
         if(account != null)
         {
-            ResponseEntity.ok(account);
+            return ResponseEntity.ok(account);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
@@ -61,7 +63,7 @@ public class SocialMediaController
     @PostMapping("/messages")
     public ResponseEntity<Message> postMessage(@RequestBody Message message)
     {
-        if(message.getMessageText().isEmpty() || accountRepository.findAccountByAccountId(message.getPostedBy()) != null)
+        if(message.getMessageText().isEmpty() || accountRepository.findAccountByAccountId(message.getPostedBy()) == null || message.getMessageText().length() > 255)
         {
             return ResponseEntity.badRequest().body(null);
         }
@@ -81,16 +83,22 @@ public class SocialMediaController
     }
 
     @DeleteMapping("/messages/{messageId}")
+    @Transactional
     public ResponseEntity<Integer> deleteMessage(@PathVariable("messageId") Integer messageId)
     {
-        return ResponseEntity.ok(messageRepository.deleteMessageByMessageId(messageId));
+        Integer deletedMessages = messageRepository.deleteByMessageId(messageId);
+        if(deletedMessages == 0)
+        {
+            return ResponseEntity.status(HttpStatus.OK).body(null);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(deletedMessages);
     }
 
     @PatchMapping("/messages/{messageId}")
     public ResponseEntity<Integer> patchMessage(@PathVariable("messageId") Integer messageId, @RequestBody Message newMessage)
     {
         Message message = messageRepository.findMessageByMessageId(messageId);
-        if(message != null && !newMessage.getMessageText().isEmpty())
+        if(message != null && !newMessage.getMessageText().isEmpty() && newMessage.getMessageText().length() < 256)
         {
             message.setMessageText(newMessage.getMessageText());
             messageRepository.save(message);

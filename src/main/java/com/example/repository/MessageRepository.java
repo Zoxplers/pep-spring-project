@@ -9,7 +9,7 @@ public interface MessageRepository extends JpaRepository<Message, Long>
 {
     Message findMessageByMessageId(Integer messageId);
 
-    Integer deleteMessageByMessageId(Integer messageId);
+    Integer deleteByMessageId(Integer messageId);
 
     List<Message> findMessagesByPostedBy(Integer accountId);
 }
